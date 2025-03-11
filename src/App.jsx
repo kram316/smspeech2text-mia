@@ -146,9 +146,9 @@ async function startRecording() {
   try {
     objsubject = new Subject();
     connectionRef.current.stream("SendAudioStream", objsubject);
-    IsRecordingStarted = true;        
+    IsRecordingStarted = true;
     stopRecord_Subject = false;
-    
+
     console.log("Recording started...");
   } catch (err) {
       console.error("Error accessing microphone:", err);
@@ -164,11 +164,11 @@ async function stopRecording() {
       console.error("Error accessing microphone:", err);
   }
 }
-  
+
 
   return (
     <div className="App">
-      <h1>Mic - Real-time Audio Transcription</h1>
+      <h1>Speechmatic Real-time Audio Transcription</h1>
       <div id="transcription"></div>
       <button onClick={openConnection}>Open Speech Connection</button>
       <button onClick={startRecognition}>Start Recognition</button>

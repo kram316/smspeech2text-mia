@@ -29,56 +29,7 @@ function Speaker() {
   let scriptProcessorspeak = null;
 
   useEffect(() => {
-    //.withUrl("https://localhost:7066/signalr",
-      //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/ogteldev/socket/signalr",
-      // .withUrl("https://dev-tel-oneglass.accenture.com/signalr",
-      // .withUrl("wss://dev-oneglass.accenture.com/transcriptionHub",
-      //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/nextgenog/socket/signalr",
-    if (!connectionRef.current) {
-      const connection = new HubConnectionBuilder()
-        .withUrl("https://dev-tel-oneglass.accenture.com/signalr", {
-          skipNegotiation: true,
-          transport: HttpTransportType.WebSockets
-        })
-        .build();
-
-      connection.serverTimeoutInMilliseconds = 120000; // Increase to 2 minutes
-      connection.keepAliveIntervalInMilliseconds = 15000; // Send pings every 15 seconds
-
-      connection.on("ReceiveTranscribedText", (transcribedText) => {
-        console.log("TranscriptionHub:Received transcribed text:", transcribedText);
-        handelMicrophoneTranscription(transcribedText);
-      });
-
-      connection.on("PartialTranscript", (transcribedText) => {
-        console.log("TranscriptionHub:PartialTranscript:", transcribedText);
-        setPartialTranscriptAgent(transcribedText);
-      });
-
-      connection.on("messageFromServer", (transcribedText) => {
-        console.log("TranscriptionHub:messageFromServer:", transcribedText);
-        setshowMessage("TranscriptionHub:" + transcribedText);
-      });
-
-      connection.on("ErrorMessageFromServer", (transcribedText) => {
-        console.log("TranscriptionHub:ErrorMessageFromServer:", transcribedText);
-        setshowMessage("TranscriptionHub:" + transcribedText);
-      });
-
-      connection.onclose((error) => {
-        console.warn("TranscriptionHub:WebSocket connection closed:", error);
-      });
-
-      connection.onreconnected((connectionId) => {
-        console.log("TranscriptionHub:Reconnected with connection ID:", connectionId);
-      });
-
-      connection.onreconnecting((error) => {
-        console.log("TranscriptionHub:Reconnecting due to error:", error);
-      });
-
-      connectionRef.current = connection;
-    }
+    startConnectionMicrophone()
 
     return () => {
       if (connectionRef.current) {
@@ -87,64 +38,122 @@ function Speaker() {
     };
   }, []);
 
-  useEffect(() => {
+  async function startConnectionMicrophone(){
     //.withUrl("https://localhost:7066/signalr",
       //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/ogteldev/socket/signalr",
       // .withUrl("https://dev-tel-oneglass.accenture.com/signalr",
       // .withUrl("wss://dev-oneglass.accenture.com/transcriptionHub",
       //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/nextgenog/socket/signalr",
-    if (!connectionRefspeak.current) {
-      const connectionspeak = new HubConnectionBuilder()
-        .withUrl("https://dev-tel-oneglass.accenture.com/transcriptionforspeakerhub", {
-          skipNegotiation: true,
-          transport: HttpTransportType.WebSockets
-        })
-        .build();
+      if (!connectionRef.current) {
+        const connection = new HubConnectionBuilder()
+          .withUrl("https://dev-tel-oneglass.accenture.com/signalr", {
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets
+          })
+          .build();
 
-      connectionspeak.serverTimeoutInMilliseconds = 120000; // Increase to 2 minutes
-      connectionspeak.keepAliveIntervalInMilliseconds = 15000; // Send pings every 15 seconds
+        connection.serverTimeoutInMilliseconds = 120000; // Increase to 2 minutes
+        connection.keepAliveIntervalInMilliseconds = 15000; // Send pings every 15 seconds
 
-      connectionspeak.on("ReceiveTranscribedText", (transcribedText) => {
-        console.log("Transcriptionforspeakerhub:Received transcribed text:", transcribedText);
-        handelScreenTranscription(transcribedText);
-      });
+        connection.on("ReceiveTranscribedText", (transcribedText) => {
+          console.log("TranscriptionHub:Received transcribed text:", transcribedText);
+          setPartialTranscriptAgent("");
+          handelMicrophoneTranscription(transcribedText);
+        });
 
-      connectionspeak.on("PartialTranscript", (transcribedText) => {
-        console.log("Transcriptionforspeakerhub:PartialTranscript:", transcribedText);
-        setPartialTranscriptProspect(transcribedText);
-      });
+        connection.on("PartialTranscript", (transcribedText) => {
+          console.log("TranscriptionHub:PartialTranscript:", transcribedText);
+          setPartialTranscriptAgent(transcribedText);
+        });
 
-      connectionspeak.on("messageFromServer", (transcribedText) => {
-        console.log("Transcriptionforspeakerhub:messageFromServer:", transcribedText);
-        setshowMessage("Transcriptionforspeakerhub:" + transcribedText);
-      });
+        connection.on("messageFromServer", (transcribedText) => {
+          console.log("TranscriptionHub:messageFromServer:", transcribedText);
+          setshowMessage("TranscriptionHub:" + transcribedText);
+        });
 
-      connectionspeak.on("ErrorMessageFromServer", (transcribedText) => {
-        console.log("Transcriptionforspeakerhub:ErrorMessageFromServer:", transcribedText);
-        setshowMessage("Transcriptionforspeakerhub:" + transcribedText);
-      });
+        connection.on("ErrorMessageFromServer", (transcribedText) => {
+          console.log("TranscriptionHub:ErrorMessageFromServer:", transcribedText);
+          setshowMessage("TranscriptionHub:" + transcribedText);
+        });
 
-      connectionspeak.onclose((error) => {
-        console.error("Transcriptionforspeakerhub:WebSocket connection closed:", error);
-      });
+        connection.onclose((error) => {
+          console.warn("TranscriptionHub:WebSocket connection closed:", error);
+        });
 
-      connectionspeak.onreconnected((connectionId) => {
-        console.log("Transcriptionforspeakerhub:Reconnected with connection ID:", connectionId);
-      });
+        connection.onreconnected((connectionId) => {
+          console.log("TranscriptionHub:Reconnected with connection ID:", connectionId);
+        });
 
-      connectionspeak.onreconnecting((error) => {
-        console.log("Transcriptionforspeakerhub:Reconnecting due to error:", error);
-      });
+        connection.onreconnecting((error) => {
+          console.log("TranscriptionHub:Reconnecting due to error:", error);
+        });
 
-      connectionRefspeak.current = connectionspeak;
-    }
+        connectionRef.current = connection;
+      }
+  }
 
+  useEffect(() => {
+    startConnectionSpeaker();
     return () => {
       if (connectionRefspeak.current) {
         connectionRefspeak.current.stop();
       }
     };
   }, []);
+
+  async function startConnectionSpeaker(){
+     //.withUrl("https://localhost:7066/signalr",
+      //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/ogteldev/socket/signalr",
+      // .withUrl("https://dev-tel-oneglass.accenture.com/signalr",
+      // .withUrl("wss://dev-oneglass.accenture.com/transcriptionHub",
+      //  .withUrl("wss://apigatewayus-gcp-test.accenture.com/nextgenog/socket/signalr",
+      if (!connectionRefspeak.current) {
+        const connectionspeak = new HubConnectionBuilder()
+          .withUrl("https://dev-tel-oneglass.accenture.com/transcriptionforspeakerhub", {
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets
+          })
+          .build();
+
+        connectionspeak.serverTimeoutInMilliseconds = 120000; // Increase to 2 minutes
+        connectionspeak.keepAliveIntervalInMilliseconds = 15000; // Send pings every 15 seconds
+
+        connectionspeak.on("ReceiveTranscribedText", (transcribedText) => {
+          console.log("Transcriptionforspeakerhub:Received transcribed text:", transcribedText);
+          setPartialTranscriptProspect("");
+          handelScreenTranscription(transcribedText);
+        });
+
+        connectionspeak.on("PartialTranscript", (transcribedText) => {
+          console.log("Transcriptionforspeakerhub:PartialTranscript:", transcribedText);
+          setPartialTranscriptProspect(transcribedText);
+        });
+
+        connectionspeak.on("messageFromServer", (transcribedText) => {
+          console.log("Transcriptionforspeakerhub:messageFromServer:", transcribedText);
+          setshowMessage("Transcriptionforspeakerhub:" + transcribedText);
+        });
+
+        connectionspeak.on("ErrorMessageFromServer", (transcribedText) => {
+          console.log("Transcriptionforspeakerhub:ErrorMessageFromServer:", transcribedText);
+          setshowMessage("Transcriptionforspeakerhub:" + transcribedText);
+        });
+
+        connectionspeak.onclose((error) => {
+          console.error("Transcriptionforspeakerhub:WebSocket connection closed:", error);
+        });
+
+        connectionspeak.onreconnected((connectionId) => {
+          console.log("Transcriptionforspeakerhub:Reconnected with connection ID:", connectionId);
+        });
+
+        connectionspeak.onreconnecting((error) => {
+          console.log("Transcriptionforspeakerhub:Reconnecting due to error:", error);
+        });
+
+        connectionRefspeak.current = connectionspeak;
+      }
+  }
 
   // Auto-scroll to bottom when conversation updates
   useEffect(() => {
@@ -203,10 +212,10 @@ function Speaker() {
       connectionRefspeak.current = null;
     }
 
-    setConversation([]);
-    setPartialTranscriptAgent("");
-    setPartialTranscriptProspect("");
-    setshowMessage("");
+    // setConversation([]);
+    // setPartialTranscriptAgent("");
+    // setPartialTranscriptProspect("");
+    // setshowMessage("");
     isRecordingStartedRef.current = false;
     stopRecordSubjectRef.current = false;
     objsubject.current = null;
@@ -234,14 +243,14 @@ function Speaker() {
         await connectionRef.current.invoke("OpenConnection", selectedLanguage);
         await connectionRef.current.invoke("Ping");
         //await connectionRef.current.invoke("StartRecognition", selectedLanguage);
-        
+
 
         // Start second connection
         await connectionRefspeak.current.start();
         console.log("SignalR connection (connectionRefspeak) established.");
         await connectionRefspeak.current.invoke("OpenConnection", selectedLanguage);
         //await connectionRefspeak.current.invoke("StartRecognition", selectedLanguage);
-        
+
       } catch (err) {
         console.error("Error establishing SignalR connection:", err);
       }
@@ -387,51 +396,76 @@ const initAudiospeak = async (stream) => {
 
   async function startRecording() {
     try {
-      await openConnection();
-      await connectionRef.current.invoke("StartRecognition", selectedLanguage);
-      await connectionRefspeak.current.invoke("StartRecognition", selectedLanguage);
-      InitializeStream();
-      InitializeStreamspeak();
-      objsubject.current = new Subject();
-      objsubjectspeak.current = new Subject();
-      connectionRef.current.stream("SendAudioStream", objsubject.current);
-      connectionRefspeak.current.stream("SendAudioStream", objsubjectspeak.current);
-      isRecordingStartedRef.current = true;
-      stopRecordSubjectRef.current = false;
-      console.log("Recording started...");
+
+      setConversation([]);
+      setPartialTranscriptAgent("");
+      setPartialTranscriptProspect("");
+      setshowMessage("");
+      if(connectionRef.current || connectionRefspeak.current){
+        await closeSpeechConnection();
+      }
+
+      if(!connectionRef.current){
+        await startConnectionMicrophone();
+      }
+
+      if(!connectionRefspeak.current){
+        await startConnectionSpeaker();
+      }
+      setTimeout(async () => {
+        await openConnection();
+        await connectionRef.current.invoke("StartRecognition", selectedLanguage);
+        await connectionRefspeak.current.invoke("StartRecognition", selectedLanguage);
+        InitializeStream();
+        InitializeStreamspeak();
+        objsubject.current = new Subject();
+        objsubjectspeak.current = new Subject();
+        connectionRef.current.stream("SendAudioStream", objsubject.current);
+        connectionRefspeak.current.stream("SendAudioStream", objsubjectspeak.current);
+        isRecordingStartedRef.current = true;
+        stopRecordSubjectRef.current = false;
+        console.log("Recording started...");
+      }, 100);
+
     } catch (err) {
       console.error("Error accessing microphone:", err);
     }
   }
 
-    const closeAudioContext = async () => {
-      if (audioContext) {
-          await audioContext.close();
-          audioContext = null;
-      }
-      if (audioContextspeak) {
-          await audioContextspeak.close();
-          audioContextspeak = null;
-      }
+  const closeAudioContext = async () => {
+    // Close the audio context for the microphone if it exists
+    if (audioContext) {
+      await audioContext.close();
+      audioContext = null;
+    }
+
+    // Close the audio context for the speaker if it exists
+    if (audioContextspeak) {
+      await audioContextspeak.close();
+      audioContextspeak = null;
+    }
   };
 
-  const stopMediaStream = () => {
+  const stopMediaStream = async() => {
+    // Stop microphone stream if exists
     if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-        mediaStream = null;
+      await mediaStream.getTracks().forEach(track => track.stop()); // Stop all tracks
+      mediaStream = null;
     }
+
+    // Stop screen sharing stream if exists
     if (mediaStreamSpeak) {
-        mediaStreamSpeak.getTracks().forEach(track => track.stop());
-        mediaStreamSpeak = null;
+      await mediaStreamSpeak.getTracks().forEach(track => track.stop()); // Stop all tracks
+      mediaStreamSpeak = null;
     }
-};
+  };
 
   async function stopRecording() {
     try {
       isRecordingStartedRef.current = false;
       stopRecordSubjectRef.current = true;
       await closeAudioContext(); // Close the AudioContext
-      await closeSpeechConnection(); // Close the SignalR connection
+
       stopMediaStream(); // Stop the media stream tracks
       console.log("Recording Stopped...");
     } catch (err) {
@@ -439,34 +473,39 @@ const initAudiospeak = async (stream) => {
     }
   }
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-      
-  //   }, 2000);
-  //   return () => {
-      
-  //   };
-  // }, []);
+  useEffect(() => {
+    // setTimeout(() => {
+
+    // }, 2000);
+    return () => {
+       // Close the SignalR connection
+       closeSpeechConnection();
+
+    };
+  }, []);
 
   return (
     <div className="App container-fluid">
-      <h3>Real-time Audio Transcription</h3>
+      <h3>Speechmatic Real-time Audio Transcription</h3>
 
-      <div className="row">
-        <div className="col-2 d-flex flex-column mt-4">
+      <div >
+        <div>
+
           <select
-            className="form-select mb-2"
+
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
           >
             <option value="en">English</option>
             <option value="hi">Hindi (हिन्दी)</option>
           </select>
-          <button className="btn btn-dark mb-2" onClick={startRecording}>Start Recording</button>
-          <button className="btn btn-dark mb-2" onClick={stopRecording}>Stop Recording</button>
+
+          <button  onClick={startRecording}>Start Recording</button>
+          <button  onClick={stopRecording}>Stop Recording</button>
         </div>
-        <div className="col-10">
-          <div className="container">
+
+          <div>
+          <h5> Final Transcription: </h5>
             {/* Left Side: Conversation History */}
             <div className="conversation-container" ref={conversationRef}>
               {conversation.map((message, index) => (
@@ -478,16 +517,19 @@ const initAudiospeak = async (stream) => {
             </div>
 
             {/* Right Side: Current Speech (Live Partial Transcript) */}
+            <br/>
+            <h5> Current Recognition: </h5>
             <div className="current-speech">
-              <p><strong>Agent:</strong> <span>{partialTranscriptAgent ? partialTranscriptAgent : "Listening..."}</span></p>
-              <p><strong>Prospect:</strong> <span>{partialTranscriptProspect ? partialTranscriptProspect : "Listening..."}</span></p>
+
+              <p><strong>Agent:</strong> <span>{partialTranscriptAgent ? partialTranscriptAgent : ""}</span></p>
+              <p><strong>Prospect:</strong> <span>{partialTranscriptProspect ? partialTranscriptProspect : ""}</span></p>
             </div>
-            <div className="messagewindow">
+            {/* <div className="messagewindow">
               <p style={{ fontSize: "x-small" }}>Message : {showMessage}</p>
-            </div>
+            </div> */}
           </div>
         </div>
-      </div>
+
     </div>
   );
 }
