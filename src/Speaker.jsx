@@ -67,7 +67,7 @@ function Speaker() {
         });
 
         connection.on("messageFromServer", (transcribedText) => {
-          console.log("TranscriptionHub:messageFromServer:", transcribedText);
+          // console.log("TranscriptionHub:messageFromServer:", transcribedText);
           setshowMessage("TranscriptionHub:" + transcribedText);
         });
 
@@ -125,12 +125,12 @@ function Speaker() {
         });
 
         connectionspeak.on("PartialTranscript", (transcribedText) => {
-          console.log("Transcriptionforspeakerhub:PartialTranscript:", transcribedText);
+          //console.log("Transcriptionforspeakerhub:PartialTranscript:", transcribedText);
           setPartialTranscriptProspect(transcribedText);
         });
 
         connectionspeak.on("messageFromServer", (transcribedText) => {
-          console.log("Transcriptionforspeakerhub:messageFromServer:", transcribedText);
+          // console.log("Transcriptionforspeakerhub:messageFromServer:", transcribedText);
           setshowMessage("Transcriptionforspeakerhub:" + transcribedText);
         });
 
