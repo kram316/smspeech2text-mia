@@ -18,6 +18,9 @@ function Speaker() {
   const objsubject = useRef(null);
   const objsubjectspeak = useRef(null);
 
+  const [mediaStreamCopy, setmediaStreamCopy] = useState(null);
+  const [mediaStreamSpeakCopy, setmediaStreamSpeakCopy] = useState(null);
+
   let audioContext = null;
   let audioSource = null;
   let scriptProcessor = null;
@@ -281,6 +284,7 @@ function Speaker() {
 
   const initAudio = async (stream) => {
     mediaStream = stream; // Store the media stream
+    setmediaStreamCopy(mediaStream);
     audioContext = new AudioContext();
     audioSource = audioContext.createMediaStreamSource(stream);
     scriptProcessor = audioContext.createScriptProcessor(1024, 1, 1); // bufferSize, numInputChannels, numOutputChannels
@@ -305,6 +309,7 @@ function Speaker() {
 
 const initAudiospeak = async (stream) => {
     mediaStreamSpeak = stream; // Store the media stream
+    setmediaStreamSpeakCopy(mediaStreamSpeak);
     audioContextspeak = new AudioContext();
     audioSourcespeak = audioContextspeak.createMediaStreamSource(stream);
     scriptProcessorspeak = audioContextspeak.createScriptProcessor(1024, 1, 1); // bufferSize, numInputChannels, numOutputChannels
@@ -448,15 +453,17 @@ const initAudiospeak = async (stream) => {
 
   const stopMediaStream = async() => {
     // Stop microphone stream if exists
-    if (mediaStream) {
-      await mediaStream.getTracks().forEach(track => track.stop()); // Stop all tracks
+    if (mediaStreamCopy) {
+      await mediaStreamCopy.getTracks().forEach(track => track.stop()); // Stop all tracks
       mediaStream = null;
+      setmediaStreamCopy(null);
     }
 
     // Stop screen sharing stream if exists
-    if (mediaStreamSpeak) {
-      await mediaStreamSpeak.getTracks().forEach(track => track.stop()); // Stop all tracks
+    if (mediaStreamSpeakCopy) {
+      await mediaStreamSpeakCopy.getTracks().forEach(track => track.stop()); // Stop all tracks
       mediaStreamSpeak = null;
+      setmediaStreamSpeakCopy(null);
     }
   };
 
